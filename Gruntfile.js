@@ -799,87 +799,6 @@ var _              = require('lodash'),
                 console.log('Use the', chalk.bold('stable'), 'branch for live blogs.', chalk.bold('Never'), 'master!');
             });
 
-        // ### Build About Page *(Utility Task)*
-        // Builds the github contributors partial template used on the Settings/About page,
-        // and downloads the avatar for each of the users.
-        // Run by any task that compiles the ember assets or manually via `grunt buildAboutPage`.
-        // Only builds if the contributors template does not exist.
-        // To force a build regardless, supply the --force option.
-        //     `grunt buildAboutPage --force`
-        grunt.registerTask('buildAboutPage', 'Compile assets for the About Ghost page', function () {
-            var done = this.async(),
-                templatePath = 'core/client/app/templates/-contributors.hbs',
-                imagePath = 'core/client/public/assets/img/contributors/',
-                timeSpan = moment().subtract(90, 'days').format('YYYY-MM-DD'),
-                oauthKey = process.env.GITHUB_OAUTH_KEY;
-
-            if (fs.existsSync(templatePath) && !grunt.option('force')) {
-                grunt.log.writeln('Contributors template already exists.');
-                grunt.log.writeln(chalk.bold('Skipped'));
-                return done();
-            }
-
-            grunt.verbose.writeln('Downloading release and contributor information from GitHub');
-
-            return Promise.join(
-                Promise.promisify(fs.mkdirs)(imagePath),
-                getTopContribs({
-                    user: 'tryghost',
-                    repo: 'ghost',
-                    oauthKey: oauthKey,
-                    sinceDate: timeSpan,
-                    count: 18,
-                    retry: true
-                })
-            ).then(function (results) {
-                var contributors = results[1],
-                    contributorTemplate = '<article>\n    <a href="<%githubUrl%>" title="<%name%>">\n' +
-                        '        <img src="{{gh-path "admin" "/img/contributors"}}/<%name%>" alt="<%name%>" />\n' +
-                        '    </a>\n</article>',
-
-                    downloadImagePromise = function (url, name) {
-                        return new Promise(function (resolve, reject) {
-                            var file = fs.createWriteStream(path.join(__dirname, imagePath, name));
-                            https.get(url, function (response) {
-                                    response.pipe(file);
-                                    file.on('finish', function () {
-                                        file.close();
-                                        resolve();
-                                    });
-                                })
-                                .on('error', reject);
-                        });
-                    };
-
-                grunt.verbose.writeln('Creating contributors template.');
-                grunt.file.write(templatePath,
-                    // Map contributors to the template.
-                    _.map(contributors, function (contributor) {
-                        return contributorTemplate
-                            .replace(/<%githubUrl%>/g, contributor.githubUrl)
-                            .replace(/<%name%>/g, contributor.name);
-                    }).join('\n')
-                );
-
-                grunt.verbose.writeln('Downloading images for top contributors');
-                return Promise.all(_.map(contributors, function (contributor) {
-                    return downloadImagePromise(contributor.avatarUrl + '&s=60', contributor.name);
-                }));
-            }).then(done).catch(function (error) {
-                grunt.log.error(error);
-
-                if (error.http_status) {
-                    grunt.log.writeln('GitHub API request returned status: ' + error.http_status);
-                }
-
-                if (error.ratelimit_limit) {
-                    grunt.log.writeln('Rate limit data: limit: %d, remaining: %d, reset: %s', error.ratelimit_limit, error.ratelimit_remaining, moment.unix(error.ratelimit_reset).fromNow());
-                }
-
-                done(false);
-            });
-        });
-
         // ## Building assets
         //
         // Ghost's GitHub repository contains the un-built source code for Ghost. If you're looking for the already
@@ -915,7 +834,7 @@ var _              = require('lodash'),
         // ### Basic Asset Building
         // Builds and moves necessary client assets. Prod additionally builds the ember app.
         grunt.registerTask('assets', 'Basic asset building & moving',
-            ['clean:tmp', 'buildAboutPage']);
+            ['clean:tmp']);
 
         // ### Default asset build
         // `grunt` - default grunt task
