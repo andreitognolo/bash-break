@@ -1,4 +1,4 @@
-lib = '/Users/atognolo/projs/snap/bash-session/lib'
+lib = '/tmp/gnocci/bundle/ruby/2.2.0/gems/bash-session-0.0.2/lib'
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'bash/session.rb'
 
