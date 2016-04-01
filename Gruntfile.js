@@ -307,7 +307,7 @@ var _              = require('lodash'),
                 snap: {
                     command: 'ls',
                     options: {
-                        stdin: false
+                        stdin: true
                     }
                 },
 
