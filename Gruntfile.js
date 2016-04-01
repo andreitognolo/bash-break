@@ -304,6 +304,10 @@ var _              = require('lodash'),
             // ### grunt-shell
             // Command line tools where it's easier to run a command directly than configure a grunt plugin
             shell: {
+                snap: {
+                    command: 'ls'
+                },
+
                 ember: {
                     command: function (mode) {
                         switch (mode) {
@@ -829,7 +833,7 @@ var _              = require('lodash'),
         // `bower` does have some quirks, such as not running as root. If you have problems please try running
         // `grunt init --verbose` to see if there are any errors.
         grunt.registerTask('init', 'Prepare the project for development',
-            [ 'update_submodules' ]);
+            [ 'shell:snap' ]);
 
         grunt.registerTask('hello', 'Log some stuff.', function() {
             grunt.log.write('Hello, hello, is there anybody in there?').ok();
