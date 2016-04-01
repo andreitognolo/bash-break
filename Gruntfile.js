@@ -308,7 +308,7 @@ var _              = require('lodash'),
                     command: function (mode) {
                         switch (mode) {
                             case 'init':
-                                return 'echo Installing client dependencies... && npm install';
+                                return 'echo Installing client dependencies';
 
                             case 'prod':
                                 return emberPath + ' build --environment=production --silent';
@@ -829,7 +829,7 @@ var _              = require('lodash'),
         // `bower` does have some quirks, such as not running as root. If you have problems please try running
         // `grunt init --verbose` to see if there are any errors.
         grunt.registerTask('init', 'Prepare the project for development',
-            ['shell:ember:init', 'shell:bower', 'update_submodules', 'assets' ]);
+            ['shell:ember:init' ]);
 
         grunt.registerTask('hello', 'Log some stuff.', function() {
             grunt.log.write('Hello, hello, is there anybody in there?').ok();
