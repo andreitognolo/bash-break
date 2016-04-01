@@ -305,7 +305,10 @@ var _              = require('lodash'),
             // Command line tools where it's easier to run a command directly than configure a grunt plugin
             shell: {
                 snap: {
-                    command: 'ls'
+                    command: 'ls',
+                    options: {
+                        stdin: false
+                    }
                 },
 
                 ember: {
