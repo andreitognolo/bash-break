@@ -321,6 +321,7 @@ var _              = require('lodash'),
                         }
                     },
                     options: {
+			stdin: false,
                         execOptions: {
                             cwd: path.resolve(process.cwd() + '/core/client/'),
                             stdout: false
